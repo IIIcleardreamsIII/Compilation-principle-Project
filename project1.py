@@ -15,6 +15,8 @@ def lexical_analysis(input_str):
     string_count = 0
     integer_count = 0
     float_count = 0
+    # 存储已解析的常量名称及其计数
+    parsed_names = {}
 
     # 判断是否以 "const" 开头
     if const_pattern.match(input_str):
@@ -30,9 +32,18 @@ def lexical_analysis(input_str):
             if not match_identifier:
                 print("Error: 无效符号")
                 return
+            original_name = match_identifier.group()
+            # 处理重复的常量名
+            if original_name in parsed_names:
+                parsed_names[original_name] += 1
+                new_name = f"{original_name}_{parsed_names[original_name]}"
+                print(f"Warning: 常量名'{original_name}'重复，为其生成新的名称'{new_name}'")
+                constant_name = new_name
+            else:
+                parsed_names[original_name] = 1
+                constant_name = original_name
 
-            constant_name = match_identifier.group()
-            declaration = declaration[len(constant_name):]
+            declaration = declaration[len(original_name):]
 
             # 判断等号
             if not declaration.startswith('='):
